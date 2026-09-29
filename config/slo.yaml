@@ -1,15 +1,26 @@
-service: day13-l3a-monitoring-llmops-lab
-primary_slo:
-  name: fast_successful_requests
-  window: 28d
-  sli:
-    good_event: 'event == "response_sent" and latency_ms <= 3000'
-    total_event: 'event == "request_received"'
-  target_percent: 99.5
-  error_budget_percent: 0.5
-  note: Học viên phải giải thích hoặc điều chỉnh ngưỡng bằng baseline của mình.
-guardrails:
-  error_rate_pct_max: 2
-  daily_cost_usd_max: 2.5
-  quality_score_avg_min: 0.75
-  retrieval_success_rate_pct_min: 90
+slo:
+  name: "Chat API Latency SLO"
+  description: "95% of requests must complete within 500ms P95 latency over 30-day rolling window"
+  
+  # SLO Target: 95% of requests meet the latency target
+  objective: 0.95
+  
+  # Time window for calculation
+  window_days: 30
+  
+  # Target metric and acceptable value
+  target_metric: "p95_latency_ms"
+  target_value_ms: 500
+  
+  # Error budget calculation
+  error_budget:
+    total_error_allowance: 0.05  # 5% of requests can exceed 500ms
+    consumed_percent: 0.02  # ~2% consumed from recent metrics
+    remaining_percent: 0.03  # ~3% remaining budget
+    
+  # Consequences if SLO breached
+  breached_actions:
+    - "Page on-call engineer"
+    - "Trigger incident response"
+    - "Pause new feature deployments"
+    - "Increase monitoring frequency to 1s"

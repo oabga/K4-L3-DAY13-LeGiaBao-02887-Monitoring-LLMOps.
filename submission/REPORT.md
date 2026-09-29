@@ -4,7 +4,7 @@
 
 ## 1. Thông tin học viên
 
-- **Họ và tên:**
+- **Họ và tên: **
 - **MSSV:**
 - **Lớp:** K4-L3A
 - **Repository URL:**

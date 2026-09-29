@@ -58,6 +58,7 @@ def test_agent_records_prompt_version_with_v4_observation_api(monkeypatch) -> No
     assert span_update["metadata"] == {
         "doc_count": 1,
         "query_preview": "Explain traces",
+        "retrieval_success": True,
         "prompt_name": "day13-chat",
         "prompt_label": "production",
         "prompt_version": "3",

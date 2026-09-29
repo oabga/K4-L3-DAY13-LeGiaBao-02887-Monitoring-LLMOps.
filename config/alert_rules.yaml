@@ -1,25 +1,49 @@
 alerts:
-  - name: TODO_alert_1
-    severity: TODO
-    condition: TODO
-    duration: TODO
-    type: symptom-based
-    channel: slack
-    owner: TODO
-    runbook: docs/alerts.md#alert-1
-  - name: TODO_alert_2
-    severity: TODO
-    condition: TODO
-    duration: TODO
-    type: symptom-based
-    channel: slack
-    owner: TODO
-    runbook: docs/alerts.md#alert-2
-  - name: TODO_alert_3
-    severity: TODO
-    condition: TODO
-    duration: TODO
-    type: symptom-based
-    channel: slack
-    owner: TODO
-    runbook: docs/alerts.md#alert-3
+  schema_version: 1
+  
+  # Alert 1: High P95 Latency
+  - id: high_p95_latency
+    name: "High P95 Latency Warning"
+    description: "P95 latency exceeds 800ms for 5+ minutes"
+    metric: "p95_latency_ms"
+    condition: "> 800"
+    duration_minutes: 5
+    severity: "warning"
+    owner: "on-call"
+    slack_channel: "#alerts-chat-api"
+    runbook: "docs/alerts.md#high-p95-latency"
+    notify:
+      - type: "slack"
+        message: "High P95 latency detected. P95={{.value}}ms. See runbook for troubleshooting."
+  
+  # Alert 2: Elevated Error Rate
+  - id: elevated_error_rate
+    name: "Elevated Error Rate - Critical"
+    description: "Error rate exceeds 5% for 2+ minutes"
+    metric: "error_rate_percent"
+    condition: "> 5"
+    duration_minutes: 2
+    severity: "critical"
+    owner: "on-call"
+    slack_channel: "#alerts-critical"
+    runbook: "docs/alerts.md#elevated-error-rate"
+    notify:
+      - type: "slack"
+        message: "@channel High error rate detected! Error Rate={{.value}}%. Immediate action required."
+      - type: "pagerduty"
+        severity: "critical"
+  
+  # Alert 3: Retrieval Success Rate Drop
+  - id: retrieval_success_drop
+    name: "Retrieval Success Rate Drop"
+    description: "Retrieval success rate drops below 90% for 5+ minutes"
+    metric: "retrieval_success_rate_percent"
+    condition: "< 90"
+    duration_minutes: 5
+    severity: "warning"
+    owner: "search-team"
+    slack_channel: "#search-alerts"
+    runbook: "docs/alerts.md#retrieval-success-drop"
+    notify:
+      - type: "slack"
+        message: "Retrieval success rate dropped to {{.value}}%. Check vector DB and search indices."

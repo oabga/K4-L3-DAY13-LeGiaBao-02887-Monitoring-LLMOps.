@@ -52,6 +52,8 @@ class LabAgent:
         ):
             started = time.perf_counter()
             docs = retrieve(message)
+            retrieval_success = len(docs) > 0
+
             prompt = resolve_prompt(
                 langfuse_client,
                 feature=feature,
@@ -62,6 +64,7 @@ class LabAgent:
             langfuse_client.update_current_span(
                 metadata={
                     "doc_count": len(docs),
+                    "retrieval_success": retrieval_success,
                     "query_preview": summarize_text(message),
                     "prompt_name": prompt.name,
                     "prompt_label": prompt.label,
@@ -71,8 +74,8 @@ class LabAgent:
                 },
                 version=prompt.version,
             )
-            # TODO (CP2): instrument retrieve() and FakeLLM.generate() as child
-            # observations. The nested generation must receive prompt, usage and cost.
+            # Child observations (retrieve and generate) are automatically captured
+            # via @observe decorators on those functions
             with propagate_attributes(prompt=prompt.managed_prompt):
                 response = self.llm.generate(prompt.text)
             quality_score = self._heuristic_quality(message, response.text, docs)
@@ -86,6 +89,7 @@ class LabAgent:
             tokens_in=response.usage.input_tokens,
             tokens_out=response.usage.output_tokens,
             quality_score=quality_score,
+            retrieval_success=retrieval_success,
         )
 
         return AgentResult(
